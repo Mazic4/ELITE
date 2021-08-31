@@ -251,9 +251,9 @@ class Gaussian(MetaModule):
             return x + self.ratio*torch.randn(x.shape)*self.var ** 2 + self.mean
 
 
-class VAE(MetaModule):
+class SVDD(MetaModule):
     def __init__(self, dataset = "mnist"):
-        super(VAE, self).__init__()
+        super(SVDD, self).__init__()
 
         self.rep_dim = 128
 

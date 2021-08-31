@@ -4,18 +4,10 @@ import random
 import collections
 import numpy as np
 import torch
-# import torchvision
 import utils
 from tqdm import tqdm
 from model import AE
 from data_loader import get_loader
-# import matplotlib.pyplot as plt
-# import torch.nn as nn
-# import torch.nn.functional as F
-# from torch.autograd import Variable
-# import IPython
-# import gc
-# import matplotlib
 
 
 def build_model(hparams):
@@ -39,10 +31,6 @@ def train_lre(hparams, data_loader, visual_dataset, val_data, val_labels):
     print ("margin:", margin)
     
     method = hyperparameters['method']
-    
-    #net, opt = build_model(hparams)
-
-    # plot_step = 10000000
     smoothing_alpha = 0.9
     n_val = hparams['n_val']
 
@@ -79,7 +67,6 @@ def train_lre(hparams, data_loader, visual_dataset, val_data, val_labels):
         if data_sys == "cifar":
             meta_scale = int(n_val)
         else:
-            # meta_scale = int(n_val // 10)
             meta_scale = 5
 
         meta_net.update_params(meta_scale * hparams['mlr'], source_params=grads)
@@ -99,11 +86,8 @@ def train_lre(hparams, data_loader, visual_dataset, val_data, val_labels):
         loss = torch.sum((reconstructed_x - image) ** 2, dim=[1, 2, 3]) ** 0.5
         l_f = (loss * w.cuda()).mean()
 
-        if i % 1000 == 0:
-            print(dist[val_labels == 1].mean(),
-                  dist[val_labels == 0].mean())
-            print(loss.mean())
-            print(l_f.mean())
+        l_f.backward()
+        opt.step()
 
         temp_cost[idx] = smoothing_alpha * temp_cost[idx] + (1 - smoothing_alpha) * loss.cpu().detach()
 
@@ -175,8 +159,6 @@ def run_training(hparams):
         pred_prob_log[hparams['ratio_outlier']][idx] = unl_dist.cpu().detach()
         mask[idx] = 1
 
-    print(np.sum(mask))
-
     mask = np.zeros(len(test_dataset))
     pred_prob_test_log[hparams['ratio_outlier']] = torch.zeros(len(test_dataset))
     iter_test_loader = iter(test_loader)
@@ -186,8 +168,6 @@ def run_training(hparams):
         unl_dist = torch.sum((reconstructed_x - image.cuda()) ** 2, dim=[1, 2, 3]) ** 0.5
         pred_prob_test_log[hparams['ratio_outlier']][idx] = unl_dist.cpu().detach()
         mask[idx] = 1
-
-    print(np.sum(mask))
 
     auc_train = utils.eval_auc(pred_prob_log[hparams['ratio_outlier']].cpu().detach().numpy(), visual_dataset.labels)
     auc_test = utils.eval_auc(pred_prob_test_log[hparams['ratio_outlier']].cpu().detach().numpy(), test_dataset.labels)

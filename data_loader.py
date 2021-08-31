@@ -3,16 +3,6 @@ from torch.utils.data import DataLoader
 from torchvision import transforms, datasets
 from PIL import Image
 import numpy as np
-# import os
-# import math
-# import h5py
-# import numbers
-# import random
-# import collections
-# import torchvision
-# import pandas as pd
-# from torch.utils.data import Dataset
-# from torchvision.datasets import ImageFolder
 
 
 class DatasetImbalanced():
