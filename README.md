@@ -7,6 +7,4 @@ Code for the paper: Zhang, Huayi, et al. "ELITE: Robust Deep Anomaly Detection w
 - torchvision:torchvision==0.6.0
 - numpy==1.16.4
 
-Note: This code is not annotated, and provided as is. 
-
 If you find any problems, please contact hzhang4@wpi.edu.
